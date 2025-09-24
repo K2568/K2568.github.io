@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>K256 - CEE Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sansation:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Sansation', sans-serif;
+      margin: 0;
+      padding-top: 80px; /* space for fixed header */
+    }
+    #stickyHeader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #222;
+      color: white;
+      padding: 20px;
+      font-size: 28px;
+      z-index: 1000;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    .content {
+      padding: 0 20px; /* adds space on left and right */
+    }
+    input {
+      margin-bottom: 10px;
+      padding: 5px;
+      font-size: 16px;
+    }
+    span {
+      margin-left: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="stickyHeader"><b>K256 - CEE Calculator</b></div>
+
+  <div class="content">
+    <h4>This calculator is for Create: Electro Energetics only</h4>
+
+    <h4>Watts to FE/t:</h4>
+    <input type="number" id="WattsInput" placeholder="Watts">
+    <span id="FEReSUlt">= — FE/t</span>
+
+    <script>
+      const WattsInput = document.getElementById('WattsInput');
+      const FEReSUlt = document.getElementById('FEReSUlt');
+
+      WattsInput.addEventListener('input', () => {
+        const value = parseFloat(WattsInput.value);
+        FEReSUlt.textContent = !isNaN(value)
+          ? `= ${value / 34} FE/t`
+          : '= — FE/t';
+      });
+    </script>
+
+    <h4>FE/t to Watts:</h4>
+    <input type="number" id="FEInput" placeholder="FE">
+    <span id="WattsReSUlt">= — W</span>
+
+    <script>
+      const FEInput = document.getElementById('FEInput');
+      const WattsReSUlt = document.getElementById('WattsReSUlt');
+
+      FEInput.addEventListener('input', () => {
+        const value = parseFloat(FEInput.value);
+        WattsReSUlt.textContent = !isNaN(value)
+          ? `= ${value * 34} W`
+          : '= — W';
+      });
+    </script>
+
+    <h4>Watts to SU:</h4>
+    <h5>1 W = 1 SU</h5>
+
+    <h4>SU to Watts:</h4>
+    <h5>1 SU = 1 W</h5>
+  </div>
+
+</body>
+</html>

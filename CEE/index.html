@@ -46,7 +46,7 @@
 
     <h4>Watts to FE/t:</h4>
     <input type="number" id="WattsInput" placeholder="Watts">
-    <span id="FEReSUlt">= — FE/t</span>
+    <span id="FEReSUlt">= — FE/t (34 W = 1 FE/t)</span>
 
     <script>
       const WattsInput = document.getElementById('WattsInput');
@@ -55,14 +55,14 @@
       WattsInput.addEventListener('input', () => {
         const value = parseFloat(WattsInput.value);
         FEReSUlt.textContent = !isNaN(value)
-          ? `= ${value / 34} FE/t`
-          : '= — FE/t';
+          ? `= ${value / 34} FE/t (34 W = 1 FE/t)`
+          : '= — FE/t (34 W = 1 FE/t)';
       });
     </script>
 
     <h4>FE/t to Watts:</h4>
     <input type="number" id="FEInput" placeholder="FE">
-    <span id="WattsReSUlt">= — W</span>
+    <span id="WattsReSUlt">= — W (1 FE/t = 34 W)</span>
 
     <script>
       const FEInput = document.getElementById('FEInput');
@@ -71,8 +71,8 @@
       FEInput.addEventListener('input', () => {
         const value = parseFloat(FEInput.value);
         WattsReSUlt.textContent = !isNaN(value)
-          ? `= ${value * 34} W`
-          : '= — W';
+          ? `= ${value * 34} W (1 FE/t = 34 W)`
+          : '= — W (1 FE/t = 34 W)';
       });
     </script>
 

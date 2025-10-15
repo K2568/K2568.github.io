@@ -77,12 +77,14 @@
   })();
 
   function initUI(){
-    const menuBtn = document.getElementById('menuButton');
-    const sidebar = document.getElementById('sidebar');
-    const closeBtn = document.getElementById('closeSidebar');
-    const overlay = document.getElementById('overlay');
+  const menuBtn = document.getElementById('menuButton');
+  const sidebar = document.getElementById('sidebar');
+  const closeBtn = document.getElementById('closeSidebar');
+  const overlay = document.getElementById('overlay');
     const toggles = Array.from(document.querySelectorAll('.sidebar-toggle'));
-+
+
+  if(window.__CEEDEBUG) console.log('initUI elements:', {menuBtn, sidebar, closeBtn, overlay});
+
     function adjustOverlayAndSidebar(){
       try{
         const header = document.querySelector('header.site-header');
@@ -102,21 +104,20 @@
     window.addEventListener('resize', adjustOverlayAndSidebar);
 
     function openSidebar(){
-      if(!sidebar || !overlay || !menuBtn) return;
+      if(!sidebar || !overlay) return;
       sidebar.classList.add('open');
       overlay.classList.add('show');
       overlay.setAttribute('aria-hidden','false');
-      menuBtn.setAttribute('aria-expanded', 'true');
+      if(menuBtn) menuBtn.setAttribute('aria-expanded', 'true');
       const firstLink = sidebar.querySelector('.sidebar-link, .sidebar-toggle');
       if(firstLink) firstLink.focus();
     }
     function closeSidebar(){
-      if(!sidebar || !overlay || !menuBtn) return;
+      if(!sidebar || !overlay) return;
       sidebar.classList.remove('open');
       overlay.classList.remove('show');
       overlay.setAttribute('aria-hidden','true');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      menuBtn.focus();
+      if(menuBtn){ menuBtn.setAttribute('aria-expanded', 'false'); menuBtn.focus(); }
     }
     function toggleSidebar(){
       if(!sidebar) return;
@@ -124,9 +125,56 @@
       else openSidebar();
     }
 
-    if(menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+  if(menuBtn) menuBtn.addEventListener('click', (e)=>{ if(window.__CEEDEBUG) console.log('menuBtn clicked'); toggleSidebar(e); });
     if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
-    if(overlay) overlay.addEventListener('click', closeSidebar);
+  if(overlay) overlay.addEventListener('click', closeSidebar);
+
+    const delegatedHandler = (e)=>{
+      try{
+        const menuEl = e.target.closest ? e.target.closest('#menuButton') : null;
+        const closeEl = e.target.closest ? e.target.closest('#closeSidebar') : null;
+        const overlayEl = e.target.closest ? e.target.closest('.overlay') : null;
+        if(menuEl){
+          const _sidebar = document.getElementById('sidebar');
+          const _overlay = document.getElementById('overlay');
+          if(!_sidebar || !_overlay) return;
+          const isOpen = _sidebar.classList.contains('open');
+          if(isOpen){
+            _sidebar.classList.remove('open');
+            _overlay.classList.remove('show');
+            _overlay.setAttribute('aria-hidden','true');
+            menuEl.setAttribute('aria-expanded','false');
+            menuEl.focus();
+          }else{
+            _sidebar.classList.add('open');
+            _overlay.classList.add('show');
+            _overlay.setAttribute('aria-hidden','false');
+            menuEl.setAttribute('aria-expanded','true');
+            const firstLink = _sidebar.querySelector('.sidebar-link, .sidebar-toggle');
+            if(firstLink) firstLink.focus();
+          }
+          return;
+        }
+        if(closeEl || overlayEl){
+          const _sidebar = document.getElementById('sidebar');
+          const _overlay = document.getElementById('overlay');
+          if(!_sidebar || !_overlay) return;
+          _sidebar.classList.remove('open');
+          _overlay.classList.remove('show');
+          _overlay.setAttribute('aria-hidden','true');
+          const btn = document.getElementById('menuButton');
+          if(btn){ btn.setAttribute('aria-expanded','false'); btn.focus(); }
+          return;
+        }
+      }catch(e){/* ignore delegation errors */}
+    };
+    // Attach once; use capture and pointer/touch events so inputs are caught early
+    if(!window.__CEE_DELEGATED_ATTACHED){
+      document.addEventListener('click', delegatedHandler, true);
+      document.addEventListener('pointerdown', delegatedHandler, true);
+      document.addEventListener('touchstart', delegatedHandler, {capture:true, passive:true});
+      window.__CEE_DELEGATED_ATTACHED = true;
+    }
 
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) closeSidebar();

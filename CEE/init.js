@@ -49,76 +49,91 @@
     }catch(e){ /* ignore missing or parse errors */ }
 
   // data-attributes override defaults
-  const headerText = scriptEl ? (scriptEl.getAttribute('data-header-text') ?? defaults.headerExtra) : defaults.headerExtra;
-    const navTitle = scriptEl ? (scriptEl.getAttribute('data-nav-title') ?? defaults.navTitle) : defaults.navTitle;
+  // Prefer explicit per-page attributes on any script tag (works with content wrapper or root script)
+  const perPageScript = document.querySelector('script[data-header-text], script[data-nav-title]');
+  const headerText = perPageScript ? (perPageScript.getAttribute('data-header-text') ?? defaults.headerExtra) : (scriptEl ? (scriptEl.getAttribute('data-header-text') ?? defaults.headerExtra) : defaults.headerExtra);
+  const navTitle = perPageScript ? (perPageScript.getAttribute('data-nav-title') ?? defaults.navTitle) : (scriptEl ? (scriptEl.getAttribute('data-nav-title') ?? defaults.navTitle) : defaults.navTitle);
     if(!headerText && !navTitle) return; // nothing to apply
 
-    function appendToHeader(){
-      // Prefer existing placeholder-center, otherwise append to topbar
-      const placeholder = document.querySelector('.topbar .placeholder-center');
-      if(placeholder){
-        const span = document.createElement('span');
-        span.className = 'header-extra-text';
-        span.textContent = headerText;
-        span.style.marginLeft = '12px';
-        placeholder.insertAdjacentElement('afterend', span);
-        return true;
-      }
+    // Deterministic assignments to header slots to avoid duplication:
+    // - left (.site-title) <- navTitle (if provided)
+    // - center (.topbar-center or .placeholder-center) <- headerText (if provided)
+    // - right (.topbar-right) <- defaults.headerExtra (if provided)
 
-      const topbar = document.querySelector('.topbar');
-      if(topbar){
-        const span = document.createElement('span');
-        span.className = 'header-extra-text';
-        span.textContent = headerText;
-        span.style.marginLeft = '12px';
-        topbar.appendChild(span);
-        return true;
-      }
+    function setLeft(){
+      if(!navTitle) return false;
+      const left = document.querySelector('.site-title');
+      if(left){ left.textContent = navTitle; return true; }
       return false;
     }
 
-    if(headerText){
-      // Prefer putting the header text into .topbar-center if present
-      const center = document.querySelector('.topbar .topbar-center') || document.querySelector('.topbar .placeholder-center');
-      if(center){
-        center.textContent = headerText;
-      } else if(!appendToHeader()){
-        // header may be injected later by script.js — observe DOM and append when header appears
-        const obs = new MutationObserver((mutations, observer)=>{
-          if(appendToHeader()) observer.disconnect();
-        });
-        obs.observe(document.documentElement || document.body, {childList:true, subtree:true});
-      }
+    function setCenter(){
+      const text = headerText || navTitle || null;
+      if(!text) return false;
+      // remove any previously inserted helper spans and clear placeholder text to avoid duplicates
+      Array.from(document.querySelectorAll('.header-extra-text')).forEach(n=>n.remove());
+      const placeholder = document.querySelector('.topbar .placeholder-center');
+      if(placeholder) placeholder.textContent = '';
+      const center = document.querySelector('.topbar .topbar-center') || placeholder;
+      if(center){ center.textContent = text; return true; }
+      return false;
     }
 
-    // If navTitle provided, set center header (.topbar-center) when available
-    if(navTitle){
-      function setCenterTitle(){
-        const center = document.querySelector('.topbar .topbar-center') || document.querySelector('.topbar .placeholder-center');
-        if(center){ center.textContent = navTitle; return true; }
-        return false;
-      }
-      if(!setCenterTitle()){
-        const obs2 = new MutationObserver((mutations, observer)=>{
-          if(setCenterTitle()) observer.disconnect();
-        });
-        obs2.observe(document.documentElement || document.body, {childList:true, subtree:true});
-      }
+    function setRight(){
+      const text = defaults.headerExtra || '';
+      const right = document.querySelector('.topbar .topbar-right');
+      if(right){ right.textContent = text; return true; }
+      return false;
     }
 
-    // If headerText provided, set it to the right slot (.topbar-right)
-    if(headerText){
-      function setRightText(){
-        const right = document.querySelector('.topbar .topbar-right');
-        if(right){ right.textContent = headerText; return true; }
-        return false;
-      }
-      if(!setRightText()){
-        const obs3 = new MutationObserver((mutations, observer)=>{
-          if(setRightText()) observer.disconnect();
+    // Normalize header: once header exists set left/center/right and remove stray helper elements
+    function normalizeHeader(){
+      const header = document.querySelector('header.site-header');
+      if(!header) return false;
+      // remove helper spans
+      Array.from(header.querySelectorAll('.header-extra-text')).forEach(n=>n.remove());
+
+      const topbar = header.querySelector('.topbar');
+      if(topbar){
+        // remove stray direct text nodes and nodes that aren't left/center/right
+        Array.from(topbar.childNodes).forEach(node=>{
+          if(node.nodeType === Node.TEXT_NODE && node.textContent.trim()) node.textContent = '';
+          if(node.nodeType === Node.ELEMENT_NODE){
+            const cls = node.className || '';
+            if(!cls.includes('topbar-left') && !cls.includes('topbar-center') && !cls.includes('topbar-right')){
+              // preserve structure but clear contents
+              node.textContent = '';
+            }
+          }
         });
-        obs3.observe(document.documentElement || document.body, {childList:true, subtree:true});
       }
+
+      // left: set site title
+      if(navTitle){
+        const left = header.querySelector('.site-title');
+        if(left) left.textContent = navTitle;
+      }
+
+      // center: set per-page headerText if provided (do not fallback to navTitle)
+      if(headerText){
+        const centerEl = header.querySelector('.topbar .topbar-center') || header.querySelector('.topbar .placeholder-center');
+        if(centerEl) centerEl.textContent = headerText;
+      } else {
+        // ensure center is empty if no per-page headerText
+        const centerEl = header.querySelector('.topbar .topbar-center') || header.querySelector('.topbar .placeholder-center');
+        if(centerEl) centerEl.textContent = '';
+      }
+
+      // right: set site-wide headerExtra (if any)
+      const rightEl = header.querySelector('.topbar .topbar-right');
+      if(rightEl){ rightEl.textContent = defaults.headerExtra || ''; }
+
+      return true;
+    }
+
+    if(!normalizeHeader()){
+      const headerObs = new MutationObserver((m, o)=>{ if(normalizeHeader()) o.disconnect(); });
+      headerObs.observe(document.documentElement || document.body, {childList:true, subtree:true});
     }
 
   }catch(e){ console.warn('init.js: failed to apply header/nav defaults', e) }

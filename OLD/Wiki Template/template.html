@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1">
+		<title>K2's _ Wiki</title>
+		<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+	<header class="site-header">
+		<div class="topbar">
+			<button class="hamburger" aria-label="Open menu" id="menuButton" title="Open menu">
+				<svg width="22" height="14" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+					<rect width="24" height="2" rx="1" fill="#0f172a"/>
+					<rect y="7" width="24" height="2" rx="1" fill="#0f172a"/>
+					<rect y="14" width="24" height="2" rx="1" fill="#0f172a"/>
+				</svg>
+			</button>
+			<div class="site-title">K2's _ Wiki</div>
+			<div class="placeholder-center">Placeholder text centered in the middle</div>
+			<div style="width:36px"></div>
+		</div>
+	</header>
+
+	<div class="layout">
+		<nav class="sidebar" id="sidebar" aria-label="Main navigation">
+			<div class="sidebar-header">
+				<strong>Contents</strong>
+				<button class="hamburger" id="closeSidebar" aria-label="Close menu" title="Close menu">✕</button>
+			</div>
+
+			<ul class="sidebar-list">
+				<li class="sidebar-item"><a class="sidebar-link" href="content/index.html">Option 1</a></li>
+				<li class="sidebar-item">
+					<button class="sidebar-toggle" aria-expanded="false">Dropdown <span aria-hidden="true">▸</span></button>
+					<ul class="submenu" aria-hidden="true">
+						<li><a href="content/option1.html">Dropdown option 1</a></li>
+						<li><a href="content/option2.html">Dropdown option 2</a></li>
+						<li><a href="content/option3.html">Dropdown option 3</a></li>
+					</ul>
+				</li>
+			</ul>
+		</nav>
+
+		<main class="content">
+			<div class="card">
+				<h1 id="home">Heading</h1>
+				<p>Lorem ipsum i forgot what the hell the rest of it is</p>
+				<section>
+					<h2 id="a1">Sub Heading</h2>
+					<p>Lorem ipsum i forgot what the hell the rest of it is</p>
+				</section>
+			</div>
+		</main>
+	</div>
+
+	<footer class="site-footer">
+		<div class="footer-inner">
+			<div class="thanks">
+				<strong>Thanks to:</strong>
+				<div>— Name</div>
+				<div>— Name</div>
+				<div>For both helping with this</div>
+			</div>
+						<div>
+							<div class="cee-version">Up to date for _ version: error</div>
+						</div>
+		</div>
+	</footer>
+
+		<div class="overlay" id="overlay" tabindex="-1" aria-hidden="true"></div>
+		<script src="script.js"></script>
+</body>
+</html>
+

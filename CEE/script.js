@@ -1,0 +1,112 @@
+// Load header/nav/footer partials and reattach UI behaviors
+(function(){
+  // compute base URL from this script's location so relative partial paths resolve correctly
+  const scriptEl = document.currentScript || Array.from(document.getElementsByTagName('script')).find(s=>s.src && s.src.indexOf('script.js')!==-1);
+  const baseUrl = (scriptEl && scriptEl.src) ? new URL('.', scriptEl.src).href : new URL('.', location.href).href;
+
+  // fetch combined layout to reduce round-trips
+  (function fetchLayout(){
+    const url = new URL('layout.html', baseUrl).href;
+    fetch(url, {cache: 'no-cache'})
+      .then(r=>{ if(!r.ok) throw new Error('Network response not ok'); return r.text(); })
+      .then(html=>{
+        // create a container and parse
+        const tmp = document.createElement('div');
+        tmp.innerHTML = html;
+
+        const headerHtml = tmp.querySelector('header') ? tmp.querySelector('header').outerHTML : '';
+        const navHtml = tmp.querySelector('nav') ? tmp.querySelector('nav').outerHTML : '';
+        const footerHtml = tmp.querySelector('footer') ? tmp.querySelector('footer').outerHTML : '';
+
+        // insert header
+        if(headerHtml){
+          const ph = document.getElementById('partial-header');
+          if(ph) ph.innerHTML = headerHtml;
+          else document.body.insertAdjacentHTML('afterbegin', headerHtml);
+        }
+
+        // insert nav
+        if(navHtml){
+          const pn = document.getElementById('partial-nav');
+          const layoutEl = document.querySelector('.layout');
+          if(pn) pn.innerHTML = navHtml;
+          else if(layoutEl) layoutEl.insertAdjacentHTML('afterbegin', navHtml);
+          else document.body.insertAdjacentHTML('afterbegin', navHtml);
+        }
+
+        // insert footer
+        if(footerHtml){
+          const pf = document.getElementById('partial-footer');
+          if(pf) pf.innerHTML = footerHtml;
+          else document.body.insertAdjacentHTML('beforeend', footerHtml);
+        }
+
+        // ensure overlay exists
+        if(!document.getElementById('overlay')){
+          const ov = document.createElement('div');
+          ov.className = 'overlay';
+          ov.id = 'overlay';
+          ov.tabIndex = -1;
+          ov.setAttribute('aria-hidden','true');
+          document.body.appendChild(ov);
+        }
+
+      })
+      .then(initUI)
+      .catch(err=>{
+        console.error('Failed loading layout', err);
+        initUI();
+      });
+  })();
+
+  function initUI(){
+    const menuBtn = document.getElementById('menuButton');
+    const sidebar = document.getElementById('sidebar');
+    const closeBtn = document.getElementById('closeSidebar');
+    const overlay = document.getElementById('overlay');
+    const toggles = Array.from(document.querySelectorAll('.sidebar-toggle'));
+
+    function openSidebar(){
+      if(!sidebar || !overlay || !menuBtn) return;
+      sidebar.classList.add('open');
+      overlay.classList.add('show');
+      overlay.setAttribute('aria-hidden','false');
+      menuBtn.setAttribute('aria-expanded', 'true');
+      const firstLink = sidebar.querySelector('.sidebar-link, .sidebar-toggle');
+      if(firstLink) firstLink.focus();
+    }
+    function closeSidebar(){
+      if(!sidebar || !overlay || !menuBtn) return;
+      sidebar.classList.remove('open');
+      overlay.classList.remove('show');
+      overlay.setAttribute('aria-hidden','true');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      menuBtn.focus();
+    }
+    function toggleSidebar(){
+      if(!sidebar) return;
+      if(sidebar.classList.contains('open')) closeSidebar();
+      else openSidebar();
+    }
+
+    if(menuBtn) menuBtn.addEventListener('click', toggleSidebar);
+    if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
+    if(overlay) overlay.addEventListener('click', closeSidebar);
+
+    // Escape to close
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) closeSidebar();
+    });
+
+    toggles.forEach(btn=>{
+      const submenu = btn.nextElementSibling;
+      if(!submenu) return;
+      btn.addEventListener('click', ()=>{
+        const open = submenu.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        submenu.setAttribute('aria-hidden', open ? 'false' : 'true');
+      });
+    });
+  }
+
+})();

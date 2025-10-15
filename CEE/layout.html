@@ -1,0 +1,48 @@
+<!-- Combined layout: header, nav and footer in one file to reduce client requests -->
+<header class="site-header">
+  <div class="topbar">
+    <button class="hamburger" aria-label="Open menu" id="menuButton" title="Open menu">
+      <svg width="22" height="14" viewBox="0 0 24 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="24" height="2" rx="1" fill="#0f172a"/>
+        <rect y="7" width="24" height="2" rx="1" fill="#0f172a"/>
+        <rect y="14" width="24" height="2" rx="1" fill="#0f172a"/>
+      </svg>
+    </button>
+    <div class="site-title">K2's CEE Wiki</div>
+    <div class="placeholder-center">Homepage</div>
+    <div style="width:36px"></div>
+  </div>
+</header>
+
+<nav class="sidebar" id="sidebar" aria-label="Main navigation">
+  <div class="sidebar-header">
+    <strong>Contents</strong>
+    <button class="hamburger" id="closeSidebar" aria-label="Close menu" title="Close menu">✕</button>
+  </div>
+
+  <ul class="sidebar-list">
+    <li class="sidebar-item"><a class="sidebar-link" href="content/index.html">Home</a></li>
+    <li class="sidebar-item">
+      <button class="sidebar-toggle" aria-expanded="false">Dropdown <span aria-hidden="true">▸</span></button>
+      <ul class="submenu" aria-hidden="true">
+        <li><a href="content/option1.html">Dropdown option 1</a></li>
+        <li><a href="content/option2.html">Dropdown option 2</a></li>
+        <li><a href="content/option3.html">Dropdown option 3</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="thanks">
+      <strong>Thanks to:</strong>
+      <div>— GeorgeVI</div>
+      <div>— KarolOfGutovo#1850</div>
+      <div>For both helping with this</div>
+    </div>
+    <div>
+      <div class="cee-version">CEE version: 1.21.1-0.0.7</div>
+    </div>
+  </div>
+</footer>

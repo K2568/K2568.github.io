@@ -32,6 +32,30 @@
           if(pn) pn.innerHTML = navHtml;
           else if(layoutEl) layoutEl.insertAdjacentHTML('afterbegin', navHtml);
           else document.body.insertAdjacentHTML('afterbegin', navHtml);
+          // after inserting nav, fix relative hrefs to point to CEE base
+          try{
+            const navContainer = document.getElementById('partial-nav') || document.querySelector('.layout nav') || document.querySelector('nav');
+            if(navContainer){
+              const anchors = Array.from(navContainer.querySelectorAll('a[href]'));
+              const basePath = new URL(baseUrl).pathname || '/';
+              const baseSeg = basePath.replace(/^\/+|\/+$/g, ''); // e.g. 'CEE'
+              anchors.forEach(a=>{
+                try{
+                  const raw = a.getAttribute('href') || '';
+                  // skip external, mailto, javascript, and fragment-only links
+                  if(!raw || raw.startsWith('http:') || raw.startsWith('https:') || raw.startsWith('mailto:') || raw.startsWith('javascript:') || raw.startsWith('#')) return;
+                  // resolved pathname from baseUrl
+                  const resolvedPath = new URL(raw, baseUrl).pathname.replace(/^\/+/, ''); // e.g. 'CEE/content/option1.html' or 'content/option1.html'
+                  let outPath = resolvedPath;
+                  if(baseSeg && !outPath.startsWith(baseSeg + '/')){
+                    outPath = baseSeg + '/' + outPath;
+                  }
+                  // set href to root-relative CEE path (leading slash)
+                  a.setAttribute('href', '/' + outPath);
+                }catch(e){/* ignore malformed hrefs */}
+              });
+            }
+          }catch(e){/* ignore */}
         }
 
         // insert footer

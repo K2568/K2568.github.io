@@ -48,8 +48,8 @@
       }
     }catch(e){ /* ignore missing or parse errors */ }
 
-    // data-attributes override defaults
-    const headerText = scriptEl ? (scriptEl.getAttribute('data-header-text') ?? defaults.headerExtra) : defaults.headerExtra;
+  // data-attributes override defaults
+  const headerText = scriptEl ? (scriptEl.getAttribute('data-header-text') ?? defaults.headerExtra) : defaults.headerExtra;
     const navTitle = scriptEl ? (scriptEl.getAttribute('data-nav-title') ?? defaults.navTitle) : defaults.navTitle;
     if(!headerText && !navTitle) return; // nothing to apply
 
@@ -78,7 +78,11 @@
     }
 
     if(headerText){
-      if(!appendToHeader()){
+      // Prefer putting the header text into .topbar-center if present
+      const center = document.querySelector('.topbar .topbar-center') || document.querySelector('.topbar .placeholder-center');
+      if(center){
+        center.textContent = headerText;
+      } else if(!appendToHeader()){
         // header may be injected later by script.js — observe DOM and append when header appears
         const obs = new MutationObserver((mutations, observer)=>{
           if(appendToHeader()) observer.disconnect();
@@ -87,18 +91,33 @@
       }
     }
 
-    // if navTitle provided, set .site-title when available
+    // If navTitle provided, set center header (.topbar-center) when available
     if(navTitle){
-      function setNavTitle(){
-        const el = document.querySelector('.site-title');
-        if(el){ el.textContent = navTitle; return true; }
+      function setCenterTitle(){
+        const center = document.querySelector('.topbar .topbar-center') || document.querySelector('.topbar .placeholder-center');
+        if(center){ center.textContent = navTitle; return true; }
         return false;
       }
-      if(!setNavTitle()){
+      if(!setCenterTitle()){
         const obs2 = new MutationObserver((mutations, observer)=>{
-          if(setNavTitle()) observer.disconnect();
+          if(setCenterTitle()) observer.disconnect();
         });
         obs2.observe(document.documentElement || document.body, {childList:true, subtree:true});
+      }
+    }
+
+    // If headerText provided, set it to the right slot (.topbar-right)
+    if(headerText){
+      function setRightText(){
+        const right = document.querySelector('.topbar .topbar-right');
+        if(right){ right.textContent = headerText; return true; }
+        return false;
+      }
+      if(!setRightText()){
+        const obs3 = new MutationObserver((mutations, observer)=>{
+          if(setRightText()) observer.disconnect();
+        });
+        obs3.observe(document.documentElement || document.body, {childList:true, subtree:true});
       }
     }
 

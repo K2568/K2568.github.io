@@ -9,6 +9,10 @@
 html,body{height:100%;}
 body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:#0f172a; display:flex; flex-direction:column; min-height:100vh;}
 
+/* Make sizing predictable and prevent overflow clipping */
+*, *:before, *:after{box-sizing:border-box;}
+
+
 /* Top bar */
 header.site-header{background:linear-gradient(90deg,#fff,#fbfdff); box-shadow:var(--shadow);position:sticky;top:0;z-index:80}
 .topbar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 20px;width:100%;box-sizing:border-box}
@@ -21,7 +25,9 @@ header.site-header{background:linear-gradient(90deg,#fff,#fbfdff); box-shadow:va
 .placeholder-center{text-align:center;color:var(--muted)}
 
 /* Layout */
-.layout{display:flex;flex:1;margin:18px 0;padding:0 16px;width:100%;gap:20px}
+.layout{display:flex;flex:1;margin:18px 0;padding:0 28px 0 16px;width:100%;gap:20px}
+/* allow children to shrink to avoid overflow/clipping */
+.layout > *{min-width:0}
 /* Make content area span the full window. Use an inner container if you want a centered column inside pages. */
 .content-inner{max-width:1200px;margin:0;padding:0}
 /* ensure hover backgrounds and selection highlights are clipped inside the sidebar */
@@ -41,12 +47,13 @@ nav.sidebar.open{transform:translateX(0);pointer-events:auto}
 .submenu li a:hover{background:#f8fafc;color:inherit}
 
 /* Main content */
-main.content{flex:1;background:transparent}
-.card{background:var(--card);padding:20px;border-radius:8px;box-shadow:var(--shadow)}
+main.content{flex:1;background:transparent;min-width:0}
+.card{background:var(--card);padding:20px;border-radius:8px;box-shadow:var(--shadow);overflow-wrap:break-word;word-break:break-word}
 
 /* Footer */
 footer.site-footer{margin-top:24px;padding:18px 16px;background:transparent}
 .footer-inner{max-width:none;width:100%;margin:0;display:flex;align-items:flex-start;gap:10px;padding:0 20px;box-sizing:border-box}
+.footer-inner{max-width:none;width:100%;margin:0;display:flex;align-items:flex-start;gap:10px;padding:0 24px;box-sizing:border-box;}
 .cee-version{margin-left:auto;text-align:right}
 .thanks{color:var(--muted);font-size:14px;line-height:1.4}
 .last-updated{color:var(--muted);font-size:13px;text-align:right}

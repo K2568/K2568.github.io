@@ -1,16 +1,13 @@
-// Load header/nav/footer partials and reattach UI behaviors
 (function(){
-  // compute base URL from this script's location so relative partial paths resolve correctly
   const scriptEl = document.currentScript || Array.from(document.getElementsByTagName('script')).find(s=>s.src && s.src.indexOf('script.js')!==-1);
   const baseUrl = (scriptEl && scriptEl.src) ? new URL('.', scriptEl.src).href : new URL('.', location.href).href;
 
-  // fetch combined layout to reduce round-trips
   (function fetchLayout(){
     const url = new URL('layout.html', baseUrl).href;
     fetch(url, {cache: 'no-cache'})
       .then(r=>{ if(!r.ok) throw new Error('Network response not ok'); return r.text(); })
       .then(html=>{
-        // create a container and parse
+
         const tmp = document.createElement('div');
         tmp.innerHTML = html;
 
@@ -18,39 +15,37 @@
         const navHtml = tmp.querySelector('nav') ? tmp.querySelector('nav').outerHTML : '';
         const footerHtml = tmp.querySelector('footer') ? tmp.querySelector('footer').outerHTML : '';
 
-        // insert header
         if(headerHtml){
           const ph = document.getElementById('partial-header');
           if(ph) ph.innerHTML = headerHtml;
           else document.body.insertAdjacentHTML('afterbegin', headerHtml);
         }
 
-        // insert nav
         if(navHtml){
           const pn = document.getElementById('partial-nav');
           const layoutEl = document.querySelector('.layout');
           if(pn) pn.innerHTML = navHtml;
           else if(layoutEl) layoutEl.insertAdjacentHTML('afterbegin', navHtml);
           else document.body.insertAdjacentHTML('afterbegin', navHtml);
-          // after inserting nav, fix relative hrefs to point to CEE base
+
           try{
             const navContainer = document.getElementById('partial-nav') || document.querySelector('.layout nav') || document.querySelector('nav');
             if(navContainer){
               const anchors = Array.from(navContainer.querySelectorAll('a[href]'));
               const basePath = new URL(baseUrl).pathname || '/';
-              const baseSeg = basePath.replace(/^\/+|\/+$/g, ''); // e.g. 'CEE'
+              const baseSeg = basePath.replace(/^\/+|\/+$/g, '');
               anchors.forEach(a=>{
                 try{
                   const raw = a.getAttribute('href') || '';
-                  // skip external, mailto, javascript, and fragment-only links
+
                   if(!raw || raw.startsWith('http:') || raw.startsWith('https:') || raw.startsWith('mailto:') || raw.startsWith('javascript:') || raw.startsWith('#')) return;
-                  // resolved pathname from baseUrl
-                  const resolvedPath = new URL(raw, baseUrl).pathname.replace(/^\/+/, ''); // e.g. 'CEE/content/option1.html' or 'content/option1.html'
+
+                  const resolvedPath = new URL(raw, baseUrl).pathname.replace(/^\/+/, '');
                   let outPath = resolvedPath;
                   if(baseSeg && !outPath.startsWith(baseSeg + '/')){
                     outPath = baseSeg + '/' + outPath;
                   }
-                  // set href to root-relative CEE path (leading slash)
+
                   a.setAttribute('href', '/' + outPath);
                 }catch(e){/* ignore malformed hrefs */}
               });
@@ -58,14 +53,12 @@
           }catch(e){/* ignore */}
         }
 
-        // insert footer
         if(footerHtml){
           const pf = document.getElementById('partial-footer');
           if(pf) pf.innerHTML = footerHtml;
           else document.body.insertAdjacentHTML('beforeend', footerHtml);
         }
 
-        // ensure overlay exists
         if(!document.getElementById('overlay')){
           const ov = document.createElement('div');
           ov.className = 'overlay';
@@ -89,8 +82,7 @@
     const closeBtn = document.getElementById('closeSidebar');
     const overlay = document.getElementById('overlay');
     const toggles = Array.from(document.querySelectorAll('.sidebar-toggle'));
-
-    // Adjust overlay and sidebar positioning based on header height so they overlay content without shifting it
++
     function adjustOverlayAndSidebar(){
       try{
         const header = document.querySelector('header.site-header');
@@ -105,7 +97,7 @@
         }
       }catch(e){/* ignore layout calc errors */}
     }
-    // initial adjust and on resize
+
     adjustOverlayAndSidebar();
     window.addEventListener('resize', adjustOverlayAndSidebar);
 
@@ -136,7 +128,6 @@
     if(closeBtn) closeBtn.addEventListener('click', closeSidebar);
     if(overlay) overlay.addEventListener('click', closeSidebar);
 
-    // Escape to close
     document.addEventListener('keydown', (e)=>{
       if(e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) closeSidebar();
     });

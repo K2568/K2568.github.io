@@ -9,11 +9,8 @@
 html,body{height:100%;}
 body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:#0f172a; display:flex; flex-direction:column; min-height:100vh;}
 
-/* Make sizing predictable and prevent overflow clipping */
 *, *:before, *:after{box-sizing:border-box;}
 
-
-/* Top bar */
 header.site-header{background:linear-gradient(90deg,#fff,#fbfdff); box-shadow:var(--shadow);position:sticky;top:0;z-index:80}
 .topbar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 20px;width:100%;box-sizing:border-box}
 .topbar-left{display:flex;align-items:center;gap:8px}
@@ -25,14 +22,9 @@ header.site-header{background:linear-gradient(90deg,#fff,#fbfdff); box-shadow:va
 .site-title{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .placeholder-center{text-align:center;color:var(--muted)}
 
-/* Layout */
 .layout{display:flex;flex:1;margin:18px 0;padding:0 28px 0 16px;width:100%;gap:20px}
-/* allow children to shrink to avoid overflow/clipping */
 .layout > *{min-width:0}
-/* Make content area span the full window. Use an inner container if you want a centered column inside pages. */
 .content-inner{max-width:1200px;margin:0;padding:0}
-/* ensure hover backgrounds and selection highlights are clipped inside the sidebar */
-/* Sidebar as overlay so it doesn't push main content */
 nav.sidebar{width:var(--sidebar-width);background:var(--card);border-radius:6px;padding:12px;box-shadow:var(--shadow);transform:translateX(-110%);opacity:1;pointer-events:none;transition:transform 0.22s ease, opacity 0.22s ease;position:fixed;left:0;top:56px;height:calc(100% - 56px);overflow:auto;z-index:95;box-sizing:border-box}
 nav.sidebar.open{transform:translateX(0);pointer-events:auto}
 .sidebar-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
@@ -47,11 +39,9 @@ nav.sidebar.open{transform:translateX(0);pointer-events:auto}
 .submenu li a{display:block;padding:6px 10px;border-radius:6px;color:var(--muted);text-decoration:none;box-sizing:border-box;width:100%}
 .submenu li a:hover{background:#f8fafc;color:inherit}
 
-/* Main content */
 main.content{flex:1;background:transparent;min-width:0}
 .card{background:var(--card);padding:20px;border-radius:8px;box-shadow:var(--shadow);overflow-wrap:break-word;word-break:break-word}
 
-/* Footer */
 footer.site-footer{margin-top:24px;padding:18px 16px;background:transparent}
 .footer-inner{max-width:none;width:100%;margin:0;display:flex;align-items:flex-start;gap:10px;padding:0 20px;box-sizing:border-box}
 .footer-inner{max-width:none;width:100%;margin:0;display:flex;align-items:flex-start;gap:10px;padding:0 24px;box-sizing:border-box;}
@@ -60,12 +50,11 @@ footer.site-footer{margin-top:24px;padding:18px 16px;background:transparent}
 .last-updated{color:var(--muted);font-size:13px;text-align:right}
 .cee-version{color:var(--muted);font-size:12px;text-align:right;margin-top:6px}
 
-/* Overlay for small screens */
 .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.35);opacity:0;pointer-events:none;transition:opacity .18s ease;z-index:70}
 .overlay.show{opacity:1;pointer-events:auto}
-/* Sidebar flush left and below topbar: keep overlay behavior on all sizes so content doesn't shift */
+
 @media (min-width:881px){
-  /* adjust top/height so the fixed overlay sits below the header */
+
   nav.sidebar{top:56px;height:calc(100% - 56px)}
 }
 @media (max-width:880px){

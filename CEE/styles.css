@@ -11,14 +11,19 @@ body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "
 
 /* Top bar */
 header.site-header{background:linear-gradient(90deg,#fff,#fbfdff); box-shadow:var(--shadow);position:sticky;top:0;z-index:80}
-.topbar{display:flex;align-items:center;gap:12px;padding:10px 16px;max-width:1200px;margin:0;width:100%;}
+.topbar{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:10px 20px;width:100%;box-sizing:border-box}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-center{text-align:center}
+.topbar-right{text-align:right;min-width:36px}
 .hamburger{appearance:none;border:0;background:transparent;padding:8px;border-radius:4px;cursor:pointer}
 .hamburger:focus{outline:2px solid #cde1ff}
 .site-title{font-weight:700;display:flex;align-items:center;gap:8px}
 .placeholder-center{flex:1;text-align:center;color:var(--muted)}
 
 /* Layout */
-.layout{display:flex;flex:1;max-width:1200px;margin:18px 0;padding:0 16px;width:100%;gap:20px}
+.layout{display:flex;flex:1;margin:18px 0;padding:0 16px;width:100%;gap:20px}
+/* Make content area span the full window. Use an inner container if you want a centered column inside pages. */
+.content-inner{max-width:1200px;margin:0;padding:0}
 /* ensure hover backgrounds and selection highlights are clipped inside the sidebar */
 nav.sidebar{width:var(--sidebar-width);background:var(--card);border-radius:6px;padding:8px;box-shadow:var(--shadow);transform:translateX(-20px);opacity:0;pointer-events:none;transition:0.22s ease;position:relative;overflow:hidden;z-index:95}
 nav.sidebar.open{transform:none;opacity:1;pointer-events:auto}

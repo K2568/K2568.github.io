@@ -66,6 +66,25 @@
     const overlay = document.getElementById('overlay');
     const toggles = Array.from(document.querySelectorAll('.sidebar-toggle'));
 
+    // Adjust overlay and sidebar positioning based on header height so they overlay content without shifting it
+    function adjustOverlayAndSidebar(){
+      try{
+        const header = document.querySelector('header.site-header');
+        const top = header ? header.getBoundingClientRect().height : 0;
+        if(sidebar){
+          sidebar.style.top = top + 'px';
+          sidebar.style.height = 'calc(100% - ' + top + 'px)';
+        }
+        if(overlay){
+          overlay.style.top = top + 'px';
+          overlay.style.height = 'calc(100% - ' + top + 'px)';
+        }
+      }catch(e){/* ignore layout calc errors */}
+    }
+    // initial adjust and on resize
+    adjustOverlayAndSidebar();
+    window.addEventListener('resize', adjustOverlayAndSidebar);
+
     function openSidebar(){
       if(!sidebar || !overlay || !menuBtn) return;
       sidebar.classList.add('open');
